@@ -1,7 +1,7 @@
-# ServiceModule
+# MockCommonApi
 
 ## Overview
-The Service Module contains the core business logic for mocking web services in our web service testing app. It provides a flexible and powerful framework for simulating SOAP and REST APIs.
+The MockCommonApi contains the core business logic for mocking web services in our web service testing apps. It provides a flexible and powerful framework for simulating SOAP and REST APIs.
 
 ## Features
 - **Business Logic Implementation**: Centralized logic for service mocking.
