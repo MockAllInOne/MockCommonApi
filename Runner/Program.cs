@@ -4,7 +4,7 @@ using MockAllInOne.ServiceMock;
 
 Console.WriteLine("Hello, World!");
 
-var msgGen = new WsdlParser(@"E:\Data\OA_Server.xml");
+var msgGen = new WsdlParser(@"E:\Data\OABC_Server_2.xml");
 msgGen.CreateModel();
 
 

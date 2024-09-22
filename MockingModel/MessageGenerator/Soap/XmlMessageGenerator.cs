@@ -44,7 +44,6 @@ namespace MockAllInOne.MockingModel.MessageGenerator.Soap
 
         private void PopulateElement(XmlSchemaElement schemaElement, XElement xmlElement, XNamespace ns)
         {
-            // Add comment text
             string commentText = GenerateComment(schemaElement);
             xmlElement.AddBeforeSelf(new XComment(commentText));
 
@@ -54,6 +53,9 @@ namespace MockAllInOne.MockingModel.MessageGenerator.Soap
                 {
                     foreach (XmlSchemaAttribute attribute in complexType.AttributeUses.Values)
                     {
+                        if (attribute == null || attribute.AttributeSchemaType == null)
+                            continue;
+
                         string attrValue = GenerateDummyData(attribute.AttributeSchemaType.TypeCode);
                         XNamespace attrNamespace = attribute.QualifiedName.Namespace;
                         xmlElement.SetAttributeValue(attrNamespace + attribute.Name, attrValue);
@@ -102,7 +104,7 @@ namespace MockAllInOne.MockingModel.MessageGenerator.Soap
             return typeCode switch
             {
                 XmlTypeCode.String => "string",
-                XmlTypeCode.Boolean => "false",
+                XmlTypeCode.Boolean => (new Random().Next(2) == 0).ToString(),
                 XmlTypeCode.Decimal => "12.44",
                 XmlTypeCode.Float => new Random().Next(1, 1000).ToString(),
                 XmlTypeCode.Double => new Random().Next(1, 1000).ToString(),
