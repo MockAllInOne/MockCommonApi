@@ -1,0 +1,45 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+[Bb]in/
+[Oo]bj/
+
+# Rider specific files
+.idea/
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# NuGet Packages
+*.nupkg
+packages/
+*.snupkg
+
+# Code analysis
+*.sln.ide
+
+# Project files
+*.csproj.user
+*.csproj.nuget.cache
+*.csproj.nuget.dgspec.json
+
+# Visual Studio
+.vscode/
+*.vsconfig
+local.settings.json
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Other files
+*.log
+*.cache
+*.pdb
+*.mdb
+*.opendb
+*.tlog
