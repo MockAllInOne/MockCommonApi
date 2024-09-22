@@ -4,14 +4,14 @@ using System.Text;
 
 namespace MockAllInOne.ServiceMock
 {
-    public class HttpMock
+    public class MockService : IMockService
     {
         public bool IsStarted { get; private set; }
         private readonly HttpListener _httpListener;
         private readonly IMockSettings _mockSettings;
         private readonly CancellationTokenSource _cancellationToken = new();
 
-        public HttpMock(IMockSettings mockSettings)
+        public MockService(IMockSettings mockSettings)
         {
             if (!HttpListener.IsSupported)
                 throw new NotSupportedException("HttpListener class is not supported on this machne.");

@@ -6,5 +6,7 @@
         string OperationName { get; }
 
         string GenerateMessage(string messageId);
+
+        IReadOnlyCollection<string> GetSupportedMessages();
     }
 }

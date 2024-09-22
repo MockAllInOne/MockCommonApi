@@ -30,9 +30,9 @@ namespace MockAllInOne.MockingModel.Parser
             LoadSchemasFromWsdl();
         }
 
-        public MProject CreateModel()
+        public MProject CreateNewProject(string projectName)
         {
-            var mProj = new MProject();
+            var mProj = new MProject(projectName);
             var serviceElements = _wsdlDocument.XPathSelectElements("//wsdl:service", _namespaceManager);
             
             foreach (var serviceElement in serviceElements)
