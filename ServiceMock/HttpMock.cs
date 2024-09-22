@@ -1,7 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Net;
 using System.Text;
-using System.Threading;
 
 namespace MockAllInOne.ServiceMock
 {
@@ -63,9 +62,6 @@ namespace MockAllInOne.ServiceMock
 
         private void HandleRequest(HttpListenerContext context)
         {
-            // Simulate processing time
-            //Task.Delay(5000).Wait();
-
             HttpListenerRequest request = context.Request;
             Console.WriteLine($"Received request: {context.Request.HttpMethod} {context.Request.Url}");
 

@@ -34,6 +34,7 @@ namespace MockAllInOne.MockingModel.Parser
         {
             var mProj = new MProject();
             var serviceElements = _wsdlDocument.XPathSelectElements("//wsdl:service", _namespaceManager);
+            
             foreach (var serviceElement in serviceElements)
             {
                 var serviceName = serviceElement.Attribute("name")?.Value;
@@ -46,7 +47,7 @@ namespace MockAllInOne.MockingModel.Parser
                     string portName = portElement.Attribute("name")?.Value;
                     string portBinding = portElement.Attribute("binding")?.Value;
 
-                    string defaultAddress = ((XElement)portElement.FirstNode).Attribute("location")?.Value;
+                    string address = ((XElement)portElement.FirstNode).Attribute("location")?.Value;
 
                     var operationElements = _wsdlDocument.XPathSelectElements($"//wsdl:portType[@name='{portName}']/wsdl:operation", _namespaceManager);
 
@@ -56,14 +57,9 @@ namespace MockAllInOne.MockingModel.Parser
 
                         // Get the message structure and generate the XML for it
                         List<string> messageTypeNames = GetMessagesTypeNames(operationElement);
-                        var mOperation = new MOperation(defaultAddress, operationName, messageTypeNames, new XmlMessageGenerator(_schemaSet));//TODO: msg gen
-
-                        // TODO: remove after some simple test
-                        var message = mOperation.GenerateMessage(mOperation.GetSupportedMessages().First());
-                        // test
+                        var mOperation = new MOperation(address, operationName, messageTypeNames, new XmlMessageGenerator(_schemaSet));//TODO: msg gen
                         mContainer.AddOperation(mOperation);
                     }
-
                 }
             }
             return mProj;
@@ -73,6 +69,7 @@ namespace MockAllInOne.MockingModel.Parser
         {
             var msgTypes = new List<string>();
             var operationElements = operationElement.Nodes().OfType<XElement>();
+
             var inputElement = operationElements.FirstOrDefault(x => x.Name.LocalName == "input");
             AddMsgTypeNameTo(msgTypes, inputElement);
             var outputElement = operationElements.FirstOrDefault(x => x.Name.LocalName == "output");

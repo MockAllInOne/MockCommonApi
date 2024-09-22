@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MockAllInOne.MockingModel.Model
+﻿namespace MockAllInOne.MockingModel.Model
 {
     public class MProject
     {
+        public string Name { get; }
         private List<MContainer> _containers;
-
-        public MProject()
+        
+        public MProject(string name)
         {
+            Name = name;
             _containers = new List<MContainer>();
         }
 

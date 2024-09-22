@@ -1,8 +1,9 @@
 ﻿using MockAllInOne.MockingModel.MessageGenerator.Soap;
+using MockAllInOne.MockingModel.Model.Interfaces;
 
 namespace MockAllInOne.MockingModel.Model
 {
-    public class MOperation
+    public class MOperation : IMockOperation
     {
         public string Address { get; }
         public string OperationName { get; }
