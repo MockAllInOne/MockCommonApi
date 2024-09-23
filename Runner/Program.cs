@@ -1,21 +1,11 @@
-﻿using MockAllInOne.MockingModel.Parser;
+﻿using MockAllInOne.MockingModel.Parser.Soap;
 using MockAllInOne.ServiceMock;
 
+var parser1 = new WsdlParser(@"E:\Data\QC_Server.xml");
+var proj1 = parser1.CreateNewProject("P1");
 
-var msgGen = new WsdlParser(@"https://www.xignite.com/xCurrencies.asmx?wsdl");
-var proj = msgGen.CreateNewProject("Proj1");
-
-var someOperations = proj.GetAllContainers().First().GetAllOperations();
-
-foreach (var operation in someOperations)
-{
-    var msgIds = operation.GetSupportedMessages();
-    foreach (var msgId in msgIds)
-    {
-        var soapMockMessage = operation.GenerateMessage(msgId);
-        Console.WriteLine($"SoapMessage: {soapMockMessage}.\n"); 
-    }
-}
+var parser2 = new WsdlParser(@"https://www.xignite.com/xCurrencies.asmx?wsdl");
+var proj = parser2.CreateNewProject("Proj2");
 
 
 var mock = new MockService(new MockSettings("MyApi", 8088));
@@ -23,4 +13,4 @@ mock.Start();
 
 Console.ReadLine();
 mock.Stop();
-Console.WriteLine("Done.");
+Console.WriteLine("Done."); 

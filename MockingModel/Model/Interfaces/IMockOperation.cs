@@ -4,9 +4,7 @@
     {
         string Address { get; }
         string OperationName { get; }
-
-        string GenerateMessage(string messageId);
-
-        IReadOnlyCollection<string> GetSupportedMessages();
+        
+        IReadOnlyCollection<IMockMessage> GetSupportedMessages();
     }
 }

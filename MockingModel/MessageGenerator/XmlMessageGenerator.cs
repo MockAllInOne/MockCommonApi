@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 using System.Xml.Schema;
 
-namespace MockAllInOne.MockingModel.MessageGenerator.Soap
+namespace MockAllInOne.MockingModel.MessageGenerator
 {
     public class XmlMessageGenerator
     {
@@ -10,20 +10,25 @@ namespace MockAllInOne.MockingModel.MessageGenerator.Soap
         public XmlMessageGenerator(XmlSchemaSet schemaSet)
         {
             _schemaSet = schemaSet ?? throw new ArgumentNullException(nameof(schemaSet));
+            if (!schemaSet.IsCompiled)
+                schemaSet.Compile();
         }
 
-        public string GenerateMockXmlMessage(string elementName)
+        public string? GenerateMockXmlMessage(string elementType)
         {
-            XmlSchemaElement schemaElement = FindSchemaElement(elementName);
+            if (elementType == null)
+                return null;
+
+            XmlSchemaElement schemaElement = FindSchemaElement(elementType);
             if (schemaElement == null)
-                throw new Exception($"Element '{elementName}' not found in schema..");
+                throw new Exception($"Element '{elementType}' not found in schema..");
 
             XNamespace ns = schemaElement.QualifiedName.Namespace;
 
             var xmlDoc = new XDocument();
             var rootElement = new XElement(ns + schemaElement.QualifiedName.Name);
             xmlDoc.Add(rootElement);
-            
+
             PopulateElement(schemaElement, rootElement, ns);
 
             return xmlDoc.ToString();
@@ -86,16 +91,16 @@ namespace MockAllInOne.MockingModel.MessageGenerator.Soap
 
             if (minOccurs == 0 && maxOccurs == 1)
                 return "Optional";
-            
+
             if (minOccurs == 1 && maxOccurs == 1)
                 return "Mandatory";
-            
+
             if (minOccurs == 0 && maxOccurs > 1)
                 return "None or many";
-            
+
             if (minOccurs == 1 && maxOccurs > 1)
                 return "One or many";
-            
+
             return string.Empty;
         }
 

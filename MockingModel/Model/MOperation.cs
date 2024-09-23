@@ -1,5 +1,4 @@
-﻿using MockAllInOne.MockingModel.MessageGenerator.Soap;
-using MockAllInOne.MockingModel.Model.Interfaces;
+﻿using MockAllInOne.MockingModel.Model.Interfaces;
 using System.Xml.Serialization;
 
 namespace MockAllInOne.MockingModel.Model
@@ -12,25 +11,19 @@ namespace MockAllInOne.MockingModel.Model
         [XmlElement("OperationName")]
         public string OperationName { get; }
 
-        private XmlMessageGenerator _xmlMessageGenerator;
-        private IReadOnlyCollection<string> _messageTypeNames;
+        private IReadOnlyCollection<IMockMessage> _supportedMessages;
 
-        public MOperation(string defaultAddress, string operationName, List<string> messageTypeNames, XmlMessageGenerator xmlMessageGenerator)
+        public MOperation(string defaultAddress, string operationName, IReadOnlyCollection<IMockMessage> supportedMessages)
         {
             Address = defaultAddress;
             OperationName = operationName;
-            _messageTypeNames = messageTypeNames;
-            _xmlMessageGenerator = xmlMessageGenerator;
+            _supportedMessages = supportedMessages;
         }
 
-        public IReadOnlyCollection<string> GetSupportedMessages() 
+        public IReadOnlyCollection<IMockMessage> GetSupportedMessages()
         {
-            return _messageTypeNames;
+            return _supportedMessages;
         }
 
-        public string GenerateMessage(string supportedMessage) 
-        {
-            return _xmlMessageGenerator.GenerateMockXmlMessage(supportedMessage);
-        }
     }
 }
