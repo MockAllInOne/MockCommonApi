@@ -8,7 +8,7 @@ namespace MockAllInOne.MockingModel.Model
         [XmlElement("Id")]
         public string Id { get; private set; }
 
-        private List<IMockOperation> _operations;
+        private List<IMockEndpoint> _endpoints;
 
         public MContainer(string id)
         {
@@ -16,17 +16,17 @@ namespace MockAllInOne.MockingModel.Model
                 throw new ArgumentException($"'{nameof(id)}' cannot be null or empty.", nameof(id));
 
             Id = id;
-            _operations = new List<IMockOperation>();
+            _endpoints = new List<IMockEndpoint>();
         }
 
-        public void AddOperation(IMockOperation mOperation)
+        public void AddEndpoint(IMockEndpoint mOperation)
         {
-            _operations.Add(mOperation);
+            _endpoints.Add(mOperation);
         }
 
-        public IReadOnlyCollection<IMockOperation> GetAllOperations()
+        public IReadOnlyCollection<IMockEndpoint> GetAllEndpoints()
         {
-            return _operations.AsReadOnly();
+            return _endpoints.AsReadOnly();
         }
     }
 }

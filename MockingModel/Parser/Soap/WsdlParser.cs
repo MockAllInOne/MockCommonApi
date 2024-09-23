@@ -61,53 +61,52 @@ namespace MockAllInOne.MockingModel.Parser.Soap
 
         private void PopulateProjectContainerFor(MContainer mContainer, XElement portElement)
         {
-            string portBindingType = portElement.Attribute("binding")?.Value;
             string portBindingName = portElement.Attribute("binding")?.Value.Split(":").Last();
             string address = ((XElement)portElement.FirstNode).Attribute("location")?.Value;
 
-            var operationElementsFromPortType = _wsdlDocument.XPathSelectElements($"//wsdl:portType[@name='{portBindingName}']/wsdl:operation", _namespaceManager);
-            var operationElementsFromBinding = _wsdlDocument.XPathSelectElements($"//wsdl:binding[@type='{portBindingType}']/wsdl:operation", _namespaceManager);
+            var endpoint = new MEndpoint(portBindingName);
+            mContainer.AddEndpoint(endpoint);
 
+            var operationElementsFromBinding = _wsdlDocument.XPathSelectElements($"//wsdl:binding[@name='{portBindingName}']/wsdl:operation", _namespaceManager);
+            var bindingElem = _wsdlDocument.XPathSelectElement($"//wsdl:binding[@name='{portBindingName}']", _namespaceManager);
+            var portName = bindingElem.Attribute("type")?.Value.Split(":").Last();
+            var operationElementsFromPortType = _wsdlDocument.XPathSelectElements($"//wsdl:portType[@name='{portName}']/wsdl:operation", _namespaceManager);
+            
             foreach (var operationElem in operationElementsFromBinding)
             {
-                var soapAction = operationElem.Element(XName.Get("operation", _soapNamespace.NamespaceName)); //TODO bug with soap 1.1 vs soap 1.2 ?
-                if (soapAction == null)
-                    soapAction = operationElem.Element(XName.Get("operation", _soapNamespace12.NamespaceName));
-
-                string soapActionValue = soapAction?.Attribute("soapAction")?.Value;
                 string operationName = operationElem.Attribute("name")?.Value;
 
                 var operationFromPort = operationElementsFromPortType.FirstOrDefault(x => x.Attribute("name")?.Value == operationName);
+                var soapActionValue = operationElem.Elements().FirstOrDefault(x => x.Name.LocalName == "operation")?.Attribute("soapAction")?.Value;
+
                 var supportedMessages = GenerateSoapMessagesFor(operationElem, operationFromPort, soapActionValue);
 
                 var mOperation = new MOperation(address, operationName, supportedMessages);
-                mContainer.AddOperation(mOperation);
+                endpoint.AddOperation(mOperation);
             }
         }
 
         private IReadOnlyCollection<IMockMessage> GenerateSoapMessagesFor(XElement operationElem, XElement operationFromPort, string soapActionValue)
         {
-            var soapMessages = new List<IMockMessage>();
+            return new List<IMockMessage>
+            {
+                CreateMockMessageFor(input, soapActionValue, MessageType.Request, operationElem, operationFromPort),
+                CreateMockMessageFor(output, soapActionValue, MessageType.Response, operationElem, operationFromPort),
+                CreateMockMessageFor(fault, soapActionValue, MessageType.Error, operationElem, operationFromPort)
+            };
+        }
 
+        private IMockMessage CreateMockMessageFor(string messageType, string soapActionValue,
+                            MessageType messageTypeLabel, XElement operationElem, XElement operationFromPort)
+        {
             var httpHeader = new Dictionary<string, string>() { { "SOAPAction", soapActionValue } };
 
-            // TODO: 
-            SoapHeaderAndBodyType inputMessage = GetTypesFor(input, operationElem, operationFromPort);
-            var header = _xsdToXmlGenerator.GenerateMockXmlMessage(inputMessage.HeaderType);
-            var body = _xsdToXmlGenerator.GenerateMockXmlMessage(inputMessage.BodyType);
-            soapMessages.Add(new MMessage(MessageType.Request, httpHeader, GenerateSoapMessage(header, body).ToString()));
+            SoapHeaderAndBodyType message = GetTypesFor(messageType, operationElem, operationFromPort);
 
-            SoapHeaderAndBodyType outputMessage = GetTypesFor(output, operationElem, operationFromPort);
-            var header2 = _xsdToXmlGenerator.GenerateMockXmlMessage(outputMessage.HeaderType);
-            var body2 = _xsdToXmlGenerator.GenerateMockXmlMessage(outputMessage.BodyType);
-            soapMessages.Add(new MMessage(MessageType.Response, httpHeader, GenerateSoapMessage(header2, body2).ToString()));
+            var header = _xsdToXmlGenerator.GenerateMockXmlMessage(message.HeaderType);
+            var body = _xsdToXmlGenerator.GenerateMockXmlMessage(message.BodyType);
 
-            SoapHeaderAndBodyType faultMessage = GetTypesFor(fault, operationElem, operationFromPort);
-            var header3 = _xsdToXmlGenerator.GenerateMockXmlMessage(faultMessage.HeaderType);
-            var body3 = _xsdToXmlGenerator.GenerateMockXmlMessage(faultMessage.BodyType);
-            soapMessages.Add(new MMessage(MessageType.Request, httpHeader, GenerateSoapMessage(header3, body3).ToString()));
-            
-            return soapMessages;
+            return new MMessage(messageTypeLabel, httpHeader, GenerateSoapMessage(header, body).ToString());
         }
 
         private XDocument GenerateSoapMessage(string headerValue, string bodyValue, bool soapVersion12 = true)
