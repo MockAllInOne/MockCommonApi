@@ -8,4 +8,8 @@
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MockingModel\MockingModel.csproj" />
+  </ItemGroup>
+
 </Project>

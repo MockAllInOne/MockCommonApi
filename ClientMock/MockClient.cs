@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using MockAllInOne.MockingModel.Model;
+using MockAllInOne.MockingModel.Model.Interfaces;
+using System.Text;
 
 namespace MockAllInOne.ClientMock
 {
@@ -19,8 +21,8 @@ namespace MockAllInOne.ClientMock
             _httpClient = new HttpClient(); // Socket exhaustion
         }
 
-        // TODO return IMockMessage ?
-        public async Task<HttpResponseMessage> Send(string address, string body, Dictionary<string, string> headers, HttpMethodType method, string mediaType="application/xml")
+        // return IMockMessage ?
+        public async Task<IMockMessage> Send(string address, string body, Dictionary<string, string> headers, HttpMethodType method, string mediaType="application/xml")
         {
             var request = new HttpRequestMessage
             {
@@ -32,7 +34,11 @@ namespace MockAllInOne.ClientMock
             SetupHttpHeader(request, headers);
             
             var response = await _httpClient.SendAsync(request);
-            return response;
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseHeaders = response.Headers.ToDictionary(h => h.Key, h => string.Join(", ", h.Value));
+
+            return new MMessage(MessageType.Response, headers, responseBody);
         }
 
         private void SetHttpMethodFor(HttpRequestMessage request, HttpMethodType method)
