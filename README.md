@@ -12,7 +12,7 @@ The MockCommonApi contains the core business logic for mocking web services in o
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/MockAllInOne/ServiceModule.git
+   git clone https://github.com/MockAllInOne/MockCommonApi.git
 
 ## Contributing
 We welcome contributions! Please read our CONTRIBUTING.md for guidelines.
